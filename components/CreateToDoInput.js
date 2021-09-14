@@ -7,7 +7,6 @@ export default function CreateTodoInput() {
   const [createTodo, { loading }] = useCreateToDo();
 
   const handlerInput = (e) => {
-    console.log(e);
     setTodo(e.target.value);
   };
   const handlerCreateButton = (e) => {

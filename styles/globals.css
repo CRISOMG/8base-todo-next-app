@@ -27,6 +27,7 @@ a {
 
 .todo-list {
   width: 24rem;
+  padding-right: 1rem;
 }
 .todo-list > li {
   list-style: none;

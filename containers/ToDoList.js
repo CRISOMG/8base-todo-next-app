@@ -24,6 +24,7 @@ export function ToDoList() {
       <div className='todo'>
         <CreateTodoInput />
       </div>
+      <p style={{ color: 'gray', fontSize: '12px' }}>Click task to edit it.</p>
     </section>
   );
 }

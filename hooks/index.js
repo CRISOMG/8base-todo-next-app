@@ -1,6 +1,18 @@
 import { useState } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 
+const errorHandler = (error) => {
+  if (typeof window !== 'undefined') {
+    alert(error);
+    error.graphQLErrors.forEach((e) => {
+      if (e.code === 'NotAuthorizedError' || e.code === 'TokenExpiredError') {
+        localStorage.removeItem('token');
+        location.href = '/login';
+      }
+    });
+  }
+};
+
 const LIST_TODO = gql`
   query toDoList {
     todosList {
@@ -14,7 +26,7 @@ const LIST_TODO = gql`
 `;
 export function useListToDo() {
   return useQuery(LIST_TODO, {
-    onError: typeof window !== 'undefined' ? alert : () => {},
+    onError: errorHandler,
   });
 }
 
@@ -31,6 +43,7 @@ export function useCreateToDo(text = 'test', completed = false) {
       }
     `,
     {
+      onError: errorHandler,
       variables: {
         data: {
           text,
@@ -76,12 +89,12 @@ export function useDeleteToDo(id = '') {
       }
     `,
     {
+      onError: errorHandler,
       variables: {
         data: {
           id,
         },
       },
-      onError: alert,
       update(cache) {
         const todo = cache.readFragment({
           id: `Todo:${id}`,
@@ -121,13 +134,13 @@ export function useUpdateToDo(id = '', text = '') {
       }
     `,
     {
+      onError: errorHandler,
       variables: {
         data: {
           id,
           text,
         },
       },
-      onError: alert,
     },
   );
 }
@@ -144,11 +157,36 @@ export function useCheckToDo(id, completed) {
       }
     `,
     {
+      onError: errorHandler,
       variables: {
         id,
         completed,
       },
-      onError: alert,
+    },
+  );
+}
+
+export function useUserLogin(email, password) {
+  return useMutation(
+    gql`
+      mutation userLogin($data: UserLoginInput!) {
+        userLogin(data: $data) {
+          success
+          auth {
+            idToken
+            refreshToken
+          }
+        }
+      }
+    `,
+    {
+      onError: errorHandler,
+      variables: {
+        data: {
+          email,
+          password,
+        },
+      },
     },
   );
 }
