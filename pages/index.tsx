@@ -1,4 +1,4 @@
-import { ToDoList } from '../containers/ToDoList';
+import ToDoList from '../containers/ToDoList';
 
 export default function Home() {
   return <ToDoList />;

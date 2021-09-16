@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useUserLogin } from '../hooks';
+import { useLoginUser } from '../hooks';
 
 export default function Login() {
   const [email, setEmail] = useState(process.env.NEXT_PUBLIC_EMAIL);
   const [password, setPassword] = useState(process.env.NEXT_PUBLIC_PASSWORD);
   const [toggleShow, setToggleShow] = useState(false);
-  const [userLogin, { loading }] = useUserLogin(email, password);
+
+  const [userLogin, { loading }] = useLoginUser(email, password);
 
   const handlerShowPassword = (e) => {
     setToggleShow(!toggleShow);

@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { gql, useQuery, useMutation } from '@apollo/client';
+import { gql, useQuery, QueryResult, useMutation, MutationTuple } from '@apollo/client';
 
 const errorHandler = (error) => {
+  console.error(error)
   if (typeof window !== 'undefined') {
     alert(error);
     error.graphQLErrors.forEach((e) => {
@@ -24,13 +25,52 @@ const LIST_TODO = gql`
     }
   }
 `;
-export function useListToDo() {
-  return useQuery(LIST_TODO, {
-    onError: errorHandler,
-  });
+
+type toDo = {
+  id: string,
+  text: string,
+  completed: boolean,
+  __typename: string
 }
 
-export function useCreateToDo(text = 'test', completed = false) {
+type todoListData = QueryResult<{
+  todosList: {
+    items: toDo[]
+    __typename: string,
+  }
+}>
+
+/**
+ * Custom Hook para Traer una Lista de tareas
+ * 
+ * @see https://www.apollographql.com/docs/react/data/queries/
+ */
+export function useListToDo(): todoListData {
+  return useQuery(LIST_TODO, {
+    onError: errorHandler,
+  })
+};
+
+type CreateToDoData = {
+  todoCreate: toDo
+}
+
+type CreateToDoVariables = {
+  data: {
+    text: string,
+    completed: boolean
+  }
+}
+
+/**
+ * Custom Hook para Crear una tarea
+ * 
+ * @param {string} [text]
+ * @param {boolean} [completed]
+ *
+ * @see https://www.apollographql.com/docs/react/data/mutations/
+ */
+export function useCreateToDo(text?: string, completed?: boolean): MutationTuple<CreateToDoData, CreateToDoVariables> {
   return useMutation(
     gql`
       mutation CreateToDo($data: TodoCreateInput!) {
@@ -43,25 +83,14 @@ export function useCreateToDo(text = 'test', completed = false) {
       }
     `,
     {
-      onError: errorHandler,
       variables: {
         data: {
           text,
           completed,
         },
       },
+      onError: errorHandler,
       update(cache, result) {
-        // const todo = cache.readFragment({
-        //   id: cache.identify(result.data.todoCreate),
-        //   query: gql`
-        //     fragment newTodo on Todo {
-        //       id
-        //       text
-        //       completed
-        //       __typename
-        //     }
-        //   `,
-        // });
         const { todosList } = cache.readQuery({
           query: LIST_TODO,
         });
@@ -79,7 +108,26 @@ export function useCreateToDo(text = 'test', completed = false) {
   );
 }
 
-export function useDeleteToDo(id = '') {
+type DeleteToDoData = {
+  todoDelete: {
+    success: boolean
+  }
+}
+
+type DeleteToDoVariables = {
+  data: {
+    id: string
+  }
+}
+
+/**
+ * Custom Hook para Borrar una tarea
+ *
+ * @param {string} [id]
+ *
+ * @see https://www.apollographql.com/docs/react/data/mutations/
+ */
+export function useDeleteToDo(id): MutationTuple<DeleteToDoData, DeleteToDoVariables> {
   return useMutation(
     gql`
       mutation DeleteToDo($data: TodoDeleteInput!) {
@@ -89,14 +137,14 @@ export function useDeleteToDo(id = '') {
       }
     `,
     {
-      onError: errorHandler,
       variables: {
         data: {
           id,
         },
       },
+      onError: errorHandler,
       update(cache) {
-        const todo = cache.readFragment({
+        const todo: {} = cache.readFragment({
           id: `Todo:${id}`,
           fragment: gql`
             fragment getTodo on Todo {
@@ -122,7 +170,27 @@ export function useDeleteToDo(id = '') {
   );
 }
 
-export function useUpdateToDo(id = '', text = '') {
+
+type UpdateToDoData = {
+  todoUpdate: toDo
+}
+
+type UpdateToDoVariables = {
+  data: {
+    id: string,
+    text: string
+  }
+}
+
+/**
+ * Custom Hook para Actualizar una tarea
+ *
+ * @param {string} [id]
+ * @param {string} [text]
+ *
+ * @see https://www.apollographql.com/docs/react/data/mutations/
+ */
+export function useUpdateToDo(id, text): MutationTuple<UpdateToDoData, UpdateToDoVariables> {
   return useMutation(
     gql`
       mutation UpdateToDo($data: TodoUpdateInput!) {
@@ -145,7 +213,25 @@ export function useUpdateToDo(id = '', text = '') {
   );
 }
 
-export function useCheckToDo(id, completed) {
+
+type CheckToDoData = {
+  todoToggle: toDo,
+}
+
+type CheckToDoVariables = {
+  id: string
+  completed: boolean
+}
+
+/**
+ * Custom Hook para Checkear una tarea.
+ *
+ * @param {string} [id]
+ * @param {boolean} [completed]
+ *
+ * @see https://www.apollographql.com/docs/react/data/mutations/
+ */
+export function useCheckToDo(id, completed): MutationTuple<CheckToDoData, CheckToDoVariables> {
   return useMutation(
     gql`
       mutation todoToggle($id: ID!, $completed: Boolean!) {
@@ -157,16 +243,40 @@ export function useCheckToDo(id, completed) {
       }
     `,
     {
-      onError: errorHandler,
       variables: {
         id,
         completed,
       },
+      onError: errorHandler,
     },
   );
 }
 
-export function useUserLogin(email, password) {
+type LoginUserData = {
+  userLogin: {
+    success: boolean,
+    auth: {
+      idToken: string,
+      refresh: string
+    }
+  }
+}
+
+type LoginUserVariables = {
+  data: {
+    email: string,
+    password: string
+  }
+}
+
+/**
+ * Custom Hook para autenticar un usuarion con email y contraseña.
+ *
+ * @param {string} [email]
+ * @param {string} [password]
+ * @see https://www.apollographql.com/docs/react/data/mutations/
+ */
+export function useLoginUser(email, password): MutationTuple<LoginUserData, LoginUserVariables> {
   return useMutation(
     gql`
       mutation userLogin($data: UserLoginInput!) {
@@ -180,21 +290,25 @@ export function useUserLogin(email, password) {
       }
     `,
     {
-      onError: errorHandler,
       variables: {
         data: {
           email,
           password,
         },
       },
+      onError: errorHandler,
     },
   );
 }
 
+
+/**
+ * Custom Hook tipo toggle state para mostrar y ocultar la contraseña del login.
+ */
 export function useToggle() {
   const [selected, setSelector] = useState(false);
 
-  function toggle(e) {
+  function toggle() {
     setSelector(!selected);
   }
 

@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { useCreateToDo } from '../hooks';
 
+/**
+ * Componente que maneja la creacion de un todo.
+ * 
+ * @see {@link useCreateToDo}
+ */
 export default function CreateTodoInput() {
   const [todo, setTodo] = useState('test');
 
@@ -16,10 +21,7 @@ export default function CreateTodoInput() {
           text: todo ? todo : 'test',
           completed: false,
         },
-      },
-      // awaitRefetchQueries: true,
-      // refetchQueries: ['toDoList'],
-      onError: alert,
+      }
     });
     setTodo('test');
   };

@@ -2,33 +2,18 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+Primero, configura un workspace de 8base y crear una tabla de todos:
 
-```bash
-npm run dev
-# or
-yarn dev
+Para obtener los valores de las variables de entorno necesitaras haber creado una [cuenta de 8base](https://app.8base.com/), levantado un workspace y creado una tabla con el nombre "Todo" con los campos "text" de tipo "Text" en formato "Plain" ![todo-text](./public/todo-text.png) y "completed" de tipo "Switch" en formato "Yes/No" con un valor por defecto de "No". ![todo-text](./public/todo-completed.png)
+
+una vez hayas creado la tabla de "todos" tendras un boton "Endpoint" de donde podras obtener el valor para la variable de entorno `NEXT_PUBLIC_8BASE_URL`. las otras variables son el Email y Password de tu cuenta de 8base que seran el valor por defecto de los inputs para iniciar sesión, estas ultimas variables son opcionales.
+
+asegurate de que en la tabla de usuarios tu usuario tenga el rol de administrador.
+
+segundo, renombra al archivo ".env.example" dejando solo ".env" y darles valor a las variables de entorno.
+
+```.env
+NEXT_PUBLIC_8BASE_URL= // 8base Endpoint
+NEXT_PUBLIC_EMAIL= // Email con el que creaste la cuenta de 8base [Opcional]
+NEXT_PUBLIC_PASSWORD= // Password con el que create la cuenta de 8base [Opcional]
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
